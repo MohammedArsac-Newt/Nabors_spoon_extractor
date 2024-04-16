@@ -1,0 +1,2 @@
+Actual oracle queries,Actual oracle queries - File,Actual oracle queries - Method,Actual oracle queries - Line
+"SELECT employee_id,last_name, manager_id FROM employees CONNECT BY PRIOR employee_id = manager_id; ",EmployeeDetails.java,getEmployeeDetails,31

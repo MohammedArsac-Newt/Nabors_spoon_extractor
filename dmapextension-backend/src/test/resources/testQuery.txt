@@ -1,0 +1,31 @@
+select * from dual
+<sql-query>
+<query>
+<queries>
+
+select * from dual
+<sql-query>
+<query>
+
+select * from dual
+<sql-query>
+
+<queries>
+
+select * from dual
+
+<query>
+<queries>
+
+select * from dual
+<sql-query>
+
+select * from dual
+<query>
+
+select * from dual
+<queries>
+
+String query = "Select applicationrunid from app_migration.discoverydetails where applicationname = Example";
+			LOGGER.info("getAppRunIdFromDiscoveryTable  query --> {}", query);
+			rs = jdbcTemplate.queryForList(query, Example);
