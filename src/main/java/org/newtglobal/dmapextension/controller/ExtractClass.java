@@ -7,7 +7,29 @@ public class ExtractClass {
 	public String methodContent;
 	public String classpath;
 	public String logStatements;
+	public String parameterAndType;
+	public String logFeildName;
+	public String returnTypeName;
 
+
+	public String getReturnTypeName() {
+		return returnTypeName;
+	}
+	public void setReturnTypeName(String returnTypeName) {
+		this.returnTypeName = returnTypeName;
+	}
+	public String getLogFeildName() {
+		return logFeildName;
+	}
+	public void setLogFeildName(String logFeildName) {
+		this.logFeildName = logFeildName;
+	}
+	public String getParameterAndType() {
+		return parameterAndType;
+	}
+	public void setParameterAndType(String parameterAndType) {
+		this.parameterAndType = parameterAndType;
+	}
 	public String getClasspath() { 
 		return classpath; 
 	} 

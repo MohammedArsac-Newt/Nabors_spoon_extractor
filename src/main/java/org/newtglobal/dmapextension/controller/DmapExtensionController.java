@@ -8,6 +8,10 @@ import org.newtglobal.dmapextension.service.ScanDirectoryForDiscovery;
 import org.newtglobal.dmapextension.utility.Constants;
 import org.newtglobal.dmapextension.utility.Utils;
 import org.newtglobal.dmapextension.controller.insertDescriptionLogic;
+import org.newtglobal.dmapextension.controller.testLogInserter;
+
+
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +43,9 @@ public class DmapExtensionController {
 
 	@Autowired
 	private insertDescriptionLogic  insertDescription;
+	
+	@Autowired
+	private testLogInserter testLogInserter;
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(DmapExtensionController.class);
 
@@ -96,12 +103,12 @@ public class DmapExtensionController {
 	        return response;
 	    }
 	
-//	  @PostMapping(value = "/logInsertor")
-//	    public JSONObject logInsertor(@RequestBody String projectName) {
+//	  @PostMapping(value = "/testLogInserter")
+//	    public JSONObject testLogInserter(@RequestBody String projectName) {
 //	        JSONObject response = new JSONObject();
 //
 //          try {
-//				logInsertor.logFieldInsertor();
+//        	  testLogInserter.testExtractJson(projectName);
 //			} catch (Exception e) {
 //				e.printStackTrace();
 //			}
@@ -112,6 +119,34 @@ public class DmapExtensionController {
 //	    }
 //	
 	
+		
+	  @PostMapping(value = "/testdiscovery")
+		public JSONObject teststartDiscovery(@RequestBody String appName) {
+			JSONObject jsonObj = new JSONObject();
+			Response response =null;
+			try {
+				LOGGER.info("Application passed for testloginserter --> {}", appName);
+				if (!utils.isNull(appName)) {
+					jsonObj = scanDirectoryForDiscovery.scanFoldersRecursively(appName);
+					jsonObj.put(Constants.STATUS, Constants.SUCCESS);
+					
+
+				} else {
+					jsonObj.put(Constants.STATUS, Constants.FAILED);
+				}
+				
+	            System.out.println("Method Extraction Completed !!");
+				
+				
+				
+			} catch (Exception e) {
+				LOGGER.error(Constants.EXCEPTION_MESSAGE, e);
+				jsonObj.put(Constants.STATUS, Constants.FAILED);
+			}
+			
+			
+			return jsonObj;
+		}
 	
 
 

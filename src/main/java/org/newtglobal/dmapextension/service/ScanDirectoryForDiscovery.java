@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.newtglobal.dmapextension.controller.testLogInserter;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.json.simple.JSONObject;
 import org.newtglobal.dmapextension.utility.Constants;
@@ -24,6 +25,11 @@ public class ScanDirectoryForDiscovery {
 
 	@Autowired
 	private CreateModelForDiscovery createModelForDiscovery;
+	
+	@Autowired
+	private  testLogInserter testLogInserter;
+	
+	
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ScanDirectoryForDiscovery.class);
 
@@ -86,9 +92,13 @@ public class ScanDirectoryForDiscovery {
 				targetJavaFiles.add(file.getAbsolutePath());
 			}
 
+//			if (!targetJavaFiles.isEmpty()) {
+//				createModelForDiscovery.buildModelForEachFile(targetJavaFiles, utils.appNameForJson);
+//			}
+			
 			if (!targetJavaFiles.isEmpty()) {
-				createModelForDiscovery.buildModelForEachFile(targetJavaFiles, utils.appNameForJson);
-			}
+				testLogInserter.buildModelForEachFile(targetJavaFiles, utils.appNameForJson);
+		}
 
 			targetJavaFiles.clear();	
 			

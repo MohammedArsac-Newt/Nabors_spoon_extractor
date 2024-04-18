@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 
+
 import org.newtglobal.dmapextension.controller.ClassList;
 import org.newtglobal.dmapextension.controller.ExtractClass;
 import org.newtglobal.dmapextension.controller.ExtractClassList;
@@ -24,13 +25,20 @@ import com.google.gson.Gson;
 import spoon.Launcher;
 import spoon.compiler.Environment;
 import spoon.reflect.CtModel;
+import spoon.reflect.code.CtBlock;
+import spoon.reflect.code.CtCodeSnippetStatement;
 import spoon.reflect.code.CtInvocation;
+import spoon.reflect.code.CtStatement;
 import spoon.reflect.declaration.CtClass;
+import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtField;
 //import spoon.reflect.declaration.CtField;
 import spoon.reflect.declaration.CtMethod;
+import spoon.reflect.declaration.CtParameter;
+import spoon.reflect.declaration.CtType;
 import spoon.reflect.reference.CtTypeReference;
 import spoon.reflect.visitor.filter.TypeFilter;
+import spoon.support.reflect.code.CtBlockImpl;
 
 @Component
 public class CreateModelForDiscovery {
@@ -106,7 +114,7 @@ public class CreateModelForDiscovery {
             ExtractClassList list=new ExtractClassList();
            
            
-            //
+            ////
             ArrayList<ExtractClass> arrList=new ArrayList<>();
             
             for (CtClass<?> clazz : model.getElements(new spoon.reflect.visitor.filter.TypeFilter<>(CtClass.class))) {
@@ -118,78 +126,48 @@ public class CreateModelForDiscovery {
                     String methodName = method.getSimpleName();
                     String methodContent = method.toString();
                     
-                    CtClass<?> targetClass = (CtClass<?>) method.getDeclaringType();
-//                    System.out.println(targetClass);
-                    if (targetClass != null) {
-                    	
-                    	for (CtField<?> field : targetClass.getFields()) {
-                    		System.out.println("field  -  "+field);
-                            if (field.getType().getSimpleName().equals("Logger")) {
-                                String loggerFieldName = field.getSimpleName();
-                                System.out.println("Found Logger field in " + className + "." + methodName + ": " + loggerFieldName);
-                            }
-                        }
-                    	//second approach for logger java.lang.logger 
-//                    	for (CtField<?> field : targetClass.getFields()) {
-//                            String fieldTypeName = field.getType().getQualifiedName();  // Get qualified field type name
-//                            try {
-//                                Class<?> fieldClass = Class.forName(fieldTypeName);  // Use Class.forName
-//                                if (Field.class.isAssignableFrom(fieldClass) && Logger.class.isAssignableFrom(fieldClass)) {
-//                                    String loggerFieldName = field.getSimpleName();
-//                                    System.out.println("Found potential logger field (Reflection) in " + className + "." + methodName + ": " + loggerFieldName);
-//                                }
-//                            } catch (ClassNotFoundException e) {
-//                                // Handle potential ClassNotFoundException
-//                                System.err.printf("Class not found: " + fieldTypeName + ", skipping.",e);
-//                            }
-//                        }
-                    	//third approach for java.lang.logger
-//                    	for (CtField<?> field : targetClass.getFields()) {
-//                            Class<?> fieldClass = null;
-//                            try {
-//                                fieldClass = Class.forName(field.getType().getQualifiedName());
-//
-//                            } catch (ClassNotFoundException e1) {
-//                                // Handle potential ClassNotFoundException
-//                                System.err.printf("Class not found: " + field.getType().getQualifiedName() + ", skipping.",e1);
-//                                continue;
-//                            }
-//                            if (fieldClass != null && Field.class.isAssignableFrom(fieldClass)) {
-//                                // Check if field type implements a common logging interface (optional)
-//                                if (isPotentialLoggerField(fieldClass)) {
-//                                    String loggerFieldName = field.getSimpleName();
-//                                    System.out.println("Found potential logger field in " + className + "." + methodName + ": " + loggerFieldName);
-//                                }
-//                            }
-//                    	}
- 
-                    	//fourth approach for java.lang.logger
-//                    	for (CtField<?> field : targetClass.getFields()) {
-//                            CtTypeReference<?> fieldType = field.getType();
-//                            try {
-//                                Class<?> fieldClass = Class.forName(fieldType.getQualifiedName());
-//                                if (isPotentialLoggerField(fieldClass)) {
-//                                    String loggerFieldName = field.getSimpleName();
-//                                    System.out.println("Found potential logger field: " + loggerFieldName);
-//                                }
-//                            } catch (ClassNotFoundException e1) {
-//                                // Handle ClassNotFoundException
-//                                System.err.printf("Class not found: " + fieldType.getQualifiedName() + ", skipping.",e1);
-//                            }
-//                        }
-                    }
+
+                    String packageName= clazz.getPackage().getSimpleName();
+                    
+                    
+                    System.out.println("Package name  for "+className+" is "+ packageName);
+
+                    //to get return type 
+                    CtTypeReference<?> returnType =  method.getType();
+                    String returnTypeName = returnType.getSimpleName();
+                   //System.out.println(className+" "+ methodName+ " "+ returnTypeName);
+
+
+               	    
+
+
+
+                                       
+
+                    
+                   
+                    
+                    
                     //extract log statements from the method in a class.
                     StringBuilder logStatementsBuilder = extractLogStatementsFromMethod(method);
-                    String logStatements = logStatementsBuilder.toString();
-//                  System.out.println(method.getSimpleName()+" "+ logStatements);
-/*                    if (logStatements != null) {*/
-//                    System.out.println(method.getSimpleName() + " - " + logStatements);
-//                    }             
+                    String logStatements = logStatementsBuilder.toString();     
+                    
+                    //extract log field name from the method in a class.
+
+                    StringBuilder parameterAndNameBuilder = extractParameterNameFromMethod(method);
+                    String parameterAndName =parameterAndNameBuilder.toString();
+                    
+                    String logFieldName=extractLogFieldNameFromMethod(method);
+                    String returnTypeName1=extractReturnTypeNameFromMethod(method);
+                    		
                     eclass.setClassName(className);
                     eclass.setMethodContent(methodContent);
                     eclass.setMethodName(methodName);
                     eclass.setClasspath(dirPath);
                     eclass.setLogStatements(logStatements);
+                    eclass.setParameterAndType(parameterAndName);
+                    eclass.setLogFeildName(logFieldName);
+                    eclass.setReturnTypeName(returnTypeName1);
                     arrList.add(eclass);
                 }
             }
@@ -204,6 +182,55 @@ public class CreateModelForDiscovery {
         return null;
     }
 	
+	
+	
+	
+	
+	private StringBuilder extractParameterNameFromMethod(CtMethod<?> method ) {    
+     // to get parameter from methods
+        StringBuilder parameters = new StringBuilder();
+        for (CtParameter<?> parameter : method.getParameters()) {
+            String parameterType = parameter.getType().getSimpleName();
+            String parameterName = parameter.getSimpleName();
+            parameters.append( parameterType + "," + parameterName +"/r  ");
+        }
+        System.out.println(parameters);
+		return parameters;	
+	}
+	
+	
+	
+	private String extractReturnTypeNameFromMethod(CtMethod<?> method ) {    
+	     // to get parameter from methods
+	    	//to get return type 
+	        CtTypeReference<?> returnType_ =  method.getType();
+	        String returnTypeName = returnType_.getSimpleName();
+	        //System.out.println();
+			return returnTypeName;	
+		}
+	
+	
+	public String extractLogFieldNameFromMethod(CtMethod<?> method ) {
+		String loggerFieldName=null;
+        CtClass<?> targetClass = (CtClass<?>) method.getDeclaringType();
+        if (targetClass != null) {
+        	
+        	for (CtField<?> field : targetClass.getFields()) {
+        		//System.out.println("field  -  "+field);
+                if (field.getType().getSimpleName().equals("Logger")) {
+                    loggerFieldName = field.getSimpleName();
+                    break;
+                }
+            }
+
+        }
+        System.out.println(loggerFieldName);
+        return loggerFieldName != null ? loggerFieldName : "";   
+		}
+	
+
+	
+
 	
 //    private static boolean isPotentialLoggerField(Class<?> fieldClass) {
 //        // Check for interfaces commonly used for logging (replace/add as needed)
@@ -254,49 +281,10 @@ public class CreateModelForDiscovery {
 
 	        }
 	    }
-//	    if (!foundLogs) {
-//	        return null;
-//	    }
 	    return logStatementsBuilder;
 	}
 
 }
 	
 	
-	
-	
-//    //extract logger instance
-//    
-//        CtFieldReference<?> loggerField = null;
-//
-//        // Get all fields of the class
-//        Collection<CtFieldReference<?>> fields = targetClass.getDeclaredFields();
-//
-//        // Search for the logger field
-//        for (CtFieldReference<?> field : fields) {
-//            if (Logger.class.getName().equals(field.getType().getSimpleName())) {
-//                // Found the logger field
-//            	
-//                loggerField = field;
-//                break;
-//            }
-//        }
-//        System.out.println(loggerField);
-//
-//        if (loggerField != null) {
-//            // Get the initialization expression of the logger field
-//            CtExpression<?> loggerInitExpression = loggerField.getFieldDeclaration().getDefaultExpression();
-//
-//            // Get the logger instance from the initialization expression
-//            Logger loggerInstance = null;
-//            if (loggerInitExpression != null && loggerInitExpression.toString().startsWith("LoggerFactory.getLogger")) {
-//                String loggerName = loggerInitExpression.toString().substring(loggerInitExpression.toString().indexOf('(') + 1, loggerInitExpression.toString().indexOf(')')).trim();
-//                loggerInstance = LoggerFactory.getLogger(loggerName);
-//                // You can do something with the logger instance here if needed
-//                System.out.println("loggerinstance from a "+ className+" is  "+ loggerInstance);
-//            }
-//        }
-//    }catch(Exception e1) {
-//    	LOGGER.info("logField Extract error",e1 );
-//    }
 	
